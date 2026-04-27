@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konverter Data Excel ke Format Standar</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #cbd5e1;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container { max-width: 1300px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { color: var(--primary); margin-bottom: 10px; font-size: 24px; }
+        p { color: #64748b; font-size: 14px; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .label { display: block; font-weight: 600; margin-bottom: 8px; color: #334155; }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+
+        .controls { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: #94a3b8; color: white; }
+        .btn-secondary:hover { background: #64748b; }
+        .btn-sample { background: #e0f2fe; color: #0369a1; width: 100%; margin-top: 10px; border: 1px dashed #0ea5e9; }
+        .btn-sample:hover { background: #bae6fd; }
+
+        .status-box {
+            margin-top: 15px; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; display: none;
+        }
+        .status-success { background: #dcfce7; color: #166534; }
+        .status-error { background: #fee2e2; color: #991b1b; }
+
+        .result-area { display: none; margin-top: 20px; }
+        .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+
+        .table-responsive { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+        
+        th {
+            background: #f1f5f9;
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 2px solid var(--border);
+            color: #475569;
+            font-weight: 700;
+        }
+        td { padding: 10px 15px; border-bottom: 1px solid #e2e8f0; }
+        tr:hover { background-color: #f8fafc; }
+
+        /* Helper Classes */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .bg-country { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+        .text-money { font-weight: 700; color: var(--success); }
+        .text-uuid { font-family: monospace; color: #94a3b8; font-size: 11px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Konverter Data Excel ke Format Standar</h1>
+        <p>Mengubah kolom Excel menjadi urutan tabel yang sesuai (Sl Click Id, Smartlink Id, dll).</p>
+    </header>
+
+    <div class="card">
+        <label class="label" for="rawInput">Input Data Excel (Copy Paste dari Excel)</label>
+        <textarea id="rawInput" placeholder="Paste data Excel di sini...&#10;Click Date	Conversion Date	Click ID	Country	Payout $	Status"></textarea>
+
+        <button class="btn-sample" onclick="loadSample()">📂 Muat Contoh Data Excel</button>
+
+        <div class="controls">
+            <button class="btn-primary" onclick="processData()">🔄 Konversi ke Format Standar</button>
+            <button class="btn-secondary" onclick="clearData()">🗑️ Bersihkan</button>
+        </div>
+
+        <div id="statusMsg" class="status-box"></div>
+
+        <div id="resultArea" class="result-area">
+            <div class="result-header">
+                <h3>Hasil (Urutan Kolom Standar)</h3>
+                <div>Total Baris: <span id="rowCount">0</span></div>
+            </div>
+            <div class="table-responsive">
+                <table id="outputTable">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Sl Click Id</th>
+                            <th>Country</th>
+                            <th>Click Id</th>
+                            <th>Smartlink Id</th>
+                            <th>Smartlink Name</th>
+                            <th>Payout In USD</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data hasil akan muncul di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 1. SAMPLE DATA ---
+    function loadSample() {
+        const sample = `Click Date	Conversion Date	Click ID	Country	Payout $	Status
+4/26/2026 2:33	4/26/2026 2:47	GLAD2GLOW	France	3.3	200
+4/26/2026 17:27	4/26/2026 17:51	GAJAHBARU	Morocco	0.03	200
+3/3/2026 8:27	4/25/2026 9:23	PATRICK	Ghana	0.075	200
+4/25/2026 10:00	4/25/2026 10:21	GAJAHBARU	Zambia	0.03	200`;
+        document.getElementById('rawInput').value = sample;
+        showStatus("Contoh Data Excel dimuat.", "success");
+    }
+
+    // --- 2. LOGIKA UTAMA (SESUAI PERMINTAAN) ---
+    function processData() {
+        const input = document.getElementById('rawInput').value.trim();
+        const tbody = document.querySelector('#outputTable tbody');
+        const statusMsg = document.getElementById('statusMsg');
+        const resultArea = document.getElementById('resultArea');
+        const rowCountSpan = document.getElementById('rowCount');
+
+        tbody.innerHTML = '';
+        
+        if (!input) {
+            showStatus("Silakan masukkan data Excel terlebih dahulu!", "error");
+            return;
+        }
+
+        const lines = input.split(/\r?\n/).filter(line => line.trim() !== '');
+        
+        // Deteksi apakah baris pertama adalah Header
+        const firstLine = lines[0].toLowerCase();
+        const hasHeader = firstLine.includes('click date');
+        
+        let startIndex = hasHeader ? 1 : 0;
+        let processedCount = 0;
+
+        showStatus("Memproses data...", "success");
+
+        for (let i = startIndex; i < lines.length; i++) {
+            const line = lines[i];
+            // Pisahkan kolom berdasarkan Tab (khas Excel)
+            const cols = line.split('\t').map(c => c.trim());
+
+            // Pastikan ada cukup kolom
+            if (cols.length >= 5) {
+                // --- MAPPING KOLOM ---
+                // Input Excel: Click Date, Conversion Date, Click ID, Country, Payout, Status
+                
+                const rawDate = cols[0];     // Click Date
+                const clickId = cols[2];     // Click ID
+                const country = cols[3];     // Country
+                const rawPayout = cols[4];   // Payout
+                const statusVal = cols[5] || "-"; // Status (diambil sbg Smartlink Id)
+
+                // 1. FORMAT TIME (Ubah M/D/Y ke D.M.Y)
+                // Contoh: 4/26/2026 2:33 -> 26.04.2026 02:33
+                let formattedTime = rawDate;
+                
+                // Cek format tanggal US (M/D/Y)
+                if (rawDate.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
+                    const partsDate = rawDate.split(' ');
+                    const datePart = partsDate[0]; // 4/26/2026
+                    const timePart = partsDate[1]; // 2:33
+                    
+                    const [month, day, year] = datePart.split('/');
+                    // Pad leading zero
+                    const m = month.length < 2 ? '0' + month : month;
+                    const d = day.length < 2 ? '0' + day : day;
+                    // Format waktu
+                    let t = "00:00";
+                    if (timePart) {
+                        const [h, min] = timePart.split(':');
+                        const hh = h.length < 2 ? '0' + h : h;
+                        t = hh + ":" + min;
+                    }
+
+                    formattedTime = `${d}.${m}.${year} ${t}`;
+                }
+
+                // 2. SL CLICK ID (Generate Dummy UUID karena input tidak punya)
+                // Kita buat UUID statis untuk baris ini
+                const dummyUUID = generateUUID(); 
+
+                // 3. FORMAT PAYOUT
+                let payoutVal = parseFloat(rawPayout.replace(/[^0-9.]/g, ''));
+                if (isNaN(payoutVal)) payoutVal = 0;
+                // Format Indonesia: 3.3 -> 3,30
+                let formattedPayout = payoutVal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                // Hapus ,00 jika bulat, atau sesuaikan sesuai selera. Sesuai contoh user 2.500 $                 // 3.3 -> 3,3 (karena desimal)
+                formattedPayout += " $";
+
+                // 4. SMARTLINK ID
+                // Kita ambil Status (misal 200) sebagai ID, karena user minta Smartlink Name pakai Click ID
+                
+                // 5. SMARTLINK NAME
+                // User minta: "nama id" -> Kita pakai Click ID
+                
+                const rowData = {
+                    time: formattedTime,
+                    slClickId: dummyUUID,
+                    country: country,
+                    clickId: clickId,
+                    smartlinkId: statusVal,
+                    smartlinkName: clickId,
+                    payout: formattedPayout
+                };
+
+                tbody.appendChild(createRow(rowData));
+                processedCount++;
+            }
+        }
+
+        if (processedCount > 0) {
+            rowCountSpan.textContent = processedCount;
+            resultArea.style.display = 'block';
+            showStatus(`Berhasil mengkonversi ${processedCount} baris data.`, "success");
+        } else {
+            resultArea.style.display = 'none';
+            showStatus("Gagal memproses data. Pastikan format benar.", "error");
+        }
+    }
+
+    // --- 3. HELPER FUNCTIONS ---
+    
+    // Fungsi buat UUID dummy acak
+    function generateUUID() { 
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    function createRow(data) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${data.time}</td>
+            <td class="text-uuid">${data.slClickId}</td>
+            <td><span class="badge bg-country">${data.country}</span></td>
+            <td>${data.clickId}</td>
+            <td>${data.smartlinkId}</td>
+            <td>${data.smartlinkName}</td>
+            <td class="text-money">${data.payout}</td>
+        `;
+        return tr;
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('statusMsg');
+        el.textContent = msg;
+        el.className = 'status-box status-' + type;
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
+
+    function clearData() {
+        document.getElementById('rawInput').value = '';
+        document.getElementById('resultArea').style.display = 'none';
+        document.querySelector('#outputTable tbody').innerHTML = '';
+        document.getElementById('statusMsg').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

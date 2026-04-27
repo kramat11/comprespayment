@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konverter Data Excel ke Format Standar</title>
+    <title>Konverter Data Universal</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -61,12 +61,18 @@
             font-weight: 600;
             font-size: 14px;
             transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); }
         .btn-secondary { background: #94a3b8; color: white; }
         .btn-secondary:hover { background: #64748b; }
+        .btn-copy { background: var(--success); color: white; }
+        .btn-copy:hover { background: #059669; }
+        
         .btn-sample { background: #e0f2fe; color: #0369a1; width: 100%; margin-top: 10px; border: 1px dashed #0ea5e9; }
         .btn-sample:hover { background: #bae6fd; }
 
@@ -78,6 +84,7 @@
 
         .result-area { display: none; margin-top: 20px; }
         .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .result-actions { display: flex; gap: 10px; align-items: center; }
 
         .table-responsive { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
@@ -106,24 +113,21 @@
         .bg-country { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
         .text-money { font-weight: 700; color: var(--success); }
         .text-uuid { font-family: monospace; color: #94a3b8; font-size: 11px; }
+        .empty-cell { color: #ccc; font-style: italic; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>Konverter Data Excel ke Format Standar</h1>
-        <p>Mengubah kolom Excel menjadi urutan tabel yang sesuai (Sl Click Id, Smartlink Id, dll).</p>
     </header>
 
     <div class="card">
-        <label class="label" for="rawInput">Input Data Excel (Copy Paste dari Excel)</label>
-        <textarea id="rawInput" placeholder="Paste data Excel di sini...&#10;Click Date	Conversion Date	Click ID	Country	Payout $	Status"></textarea>
-
-        <button class="btn-sample" onclick="loadSample()">📂 Muat Contoh Data Excel</button>
+        <label class="label" for="rawInput">Input Data</label>
+        <textarea id="rawInput" placeholder="Paste data Excel atau Stats di sini..."></textarea>
 
         <div class="controls">
-            <button class="btn-primary" onclick="processData()">🔄 Konversi ke Format Standar</button>
+            <button class="btn-primary" onclick="processData()">🔄 Konversi Data</button>
             <button class="btn-secondary" onclick="clearData()">🗑️ Bersihkan</button>
         </div>
 
@@ -131,8 +135,13 @@
 
         <div id="resultArea" class="result-area">
             <div class="result-header">
-                <h3>Hasil (Urutan Kolom Standar)</h3>
-                <div>Total Baris: <span id="rowCount">0</span></div>
+                <div>
+                    <h3>Hasil Konversi</h3>
+                    <div style="font-size: 12px; color: #64748b;">Total Baris Valid (Non-Zero): <span id="rowCount">0</span></div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn-copy" onclick="copyOutput()">📋 Copy All Output</button>
+                </div>
             </div>
             <div class="table-responsive">
                 <table id="outputTable">
@@ -158,17 +167,38 @@
 
 <script>
     // --- 1. SAMPLE DATA ---
-    function loadSample() {
-        const sample = `Click Date	Conversion Date	Click ID	Country	Payout $	Status
-4/26/2026 2:33	4/26/2026 2:47	GLAD2GLOW	France	3.3	200
-4/26/2026 17:27	4/26/2026 17:51	GAJAHBARU	Morocco	0.03	200
-3/3/2026 8:27	4/25/2026 9:23	PATRICK	Ghana	0.075	200
-4/25/2026 10:00	4/25/2026 10:21	GAJAHBARU	Zambia	0.03	200`;
-        document.getElementById('rawInput').value = sample;
-        showStatus("Contoh Data Excel dimuat.", "success");
+    function loadSampleStats10() {
+        // Format Baru (10 Kolom - Ada metrik tambahan 0.0075, 0.0063)
+        const stats = `Tracker	Hits	Uniques	Clicks	Conversions	Ratio	CTR	0.0075	0.0063	Revenue
+GAJAHBARU	1772	884	1052	4	0.224305556	119.00%	0.0075	0.0063	$6.60 
+jones1510	125	73	114	2	1:57	156.16%	0.074	0.0474	$5.40 
+    1	1	1	0	1:∞	100.00%	0	0	$0.00 
+GAJAHBARU01	7	3	7	0	1:∞	233.33%	0	0	$0.00 
+ORTUSEIGHT	5	5	3	0	1:∞	60.00%	0	0	$0.00 
+Total	1910	966	1177	6	0.178472222	121.84%	0	0	$12.00`;
+        document.getElementById('rawInput').value = stats;
+        showStatus("Contoh Data Stats (10 Kolom) dimuat.", "success");
     }
 
-    // --- 2. LOGIKA UTAMA (SESUAI PERMINTAAN) ---
+    function loadSampleStats() {
+        // Format 8 Kolom (Lama)
+        const stats = `Tracker	Hits	Uniques	Clicks	Conversions	Ratio	CTR	Revenue
+GAJAHBARU	1772	884	1052	4	0.224305556	119.00%	$6.60 
+jones1510	125	73	114	2	1:57	156.16%	$5.40`;
+        document.getElementById('rawInput').value = stats;
+        showStatus("Contoh Data Stats (8 Kolom) dimuat.", "success");
+    }
+
+    function loadSampleReport() {
+        // Data Report Excel (Lama)
+        const report = `Click Date	Conversion Date	Click ID	Country	Payout $	Status
+4/26/2026 2:33	4/26/2026 2:47	GLAD2GLOW	France	3.3	200
+4/26/2026 17:27	4/26/2026 17:51	GAJAHBARU	Morocco	0.03	200`;
+        document.getElementById('rawInput').value = report;
+        showStatus("Contoh Data Report dimuat.", "success");
+    }
+
+    // --- 2. LOGIKA UTAMA (SMART DETECTION) ---
     function processData() {
         const input = document.getElementById('rawInput').value.trim();
         const tbody = document.querySelector('#outputTable tbody');
@@ -179,108 +209,157 @@
         tbody.innerHTML = '';
         
         if (!input) {
-            showStatus("Silakan masukkan data Excel terlebih dahulu!", "error");
+            showStatus("Silakan masukkan data!", "error");
             return;
         }
 
         const lines = input.split(/\r?\n/).filter(line => line.trim() !== '');
-        
-        // Deteksi apakah baris pertama adalah Header
         const firstLine = lines[0].toLowerCase();
-        const hasHeader = firstLine.includes('click date');
         
-        let startIndex = hasHeader ? 1 : 0;
+        // Cek Kata Kunci
+        const isStatsMode = firstLine.includes('tracker') || firstLine.includes('revenue');
+        const isReportMode = firstLine.includes('click date') || /^\d{1,2}\/\d{1,2}\/\d{4}/.test(lines[0]);
+
         let processedCount = 0;
+        let removedCount = 0;
 
-        showStatus("Memproses data...", "success");
+        if (isStatsMode) {
+            // --- MODE STATS (SUPPORT BANYAK KOLOM) ---
+            showStatus("Mode Terdeteksi: Stats (Auto-Scan Kolom)...", "success");
+            
+            let startIndex = (firstLine.includes('tracker')) ? 1 : 0; 
 
-        for (let i = startIndex; i < lines.length; i++) {
-            const line = lines[i];
-            // Pisahkan kolom berdasarkan Tab (khas Excel)
-            const cols = line.split('\t').map(c => c.trim());
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i];
+                const cols = line.split('\t'); 
 
-            // Pastikan ada cukup kolom
-            if (cols.length >= 5) {
-                // --- MAPPING KOLOM ---
-                // Input Excel: Click Date, Conversion Date, Click ID, Country, Payout, Status
-                
-                const rawDate = cols[0];     // Click Date
-                const clickId = cols[2];     // Click ID
-                const country = cols[3];     // Country
-                const rawPayout = cols[4];   // Payout
-                const statusVal = cols[5] || "-"; // Status (diambil sbg Smartlink Id)
+                if (cols.length >= 2) {
+                    // AMBIL NAMA (Selalu Kolom Pertama)
+                    const trackerName = cols[0].trim();
 
-                // 1. FORMAT TIME (Ubah M/D/Y ke D.M.Y)
-                // Contoh: 4/26/2026 2:33 -> 26.04.2026 02:33
-                let formattedTime = rawDate;
-                
-                // Cek format tanggal US (M/D/Y)
-                if (rawDate.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
-                    const partsDate = rawDate.split(' ');
-                    const datePart = partsDate[0]; // 4/26/2026
-                    const timePart = partsDate[1]; // 2:33
-                    
-                    const [month, day, year] = datePart.split('/');
-                    // Pad leading zero
-                    const m = month.length < 2 ? '0' + month : month;
-                    const d = day.length < 2 ? '0' + day : day;
-                    // Format waktu
-                    let t = "00:00";
-                    if (timePart) {
-                        const [h, min] = timePart.split(':');
-                        const hh = h.length < 2 ? '0' + h : h;
-                        t = hh + ":" + min;
+                    // AMBIL REVENUE (Scan dari belakang ke depan - Smart Scanning)
+                    let revenue = "-";
+                    // Loop dari index terakhir ke awal
+                    for (let j = cols.length - 1; j >= 0; j--) {
+                        const colContent = cols[j].trim();
+                        // Cari kolom yang ada simbol $ atau USD dan ada angka
+                        if ((colContent.includes('$') || colContent.includes('USD')) && colContent.match(/[\d.,]+/)) {
+                            revenue = colContent;
+                            break; // Ketemu, stop looping
+                        }
                     }
 
-                    formattedTime = `${d}.${m}.${year} ${t}`;
+                    // Skip baris "Total"
+                    if (trackerName.toLowerCase() === 'total') continue;
+
+                    // Validasi minimal
+                    if (revenue === "-") continue;
+
+                    // --- FILTER PAYOUT 0 ---
+                    let cleanVal = revenue.replace(/[^0-9.,-]/g, '');
+                    if (cleanVal.includes('.') && cleanVal.includes(',')) cleanVal = cleanVal.replace(/\./g, '').replace(',', '.');
+                    else if (cleanVal.includes(',')) cleanVal = cleanVal.replace(',', '.');
+                    
+                    let val = parseFloat(cleanVal);
+                    
+                    if (val <= 0) {
+                        removedCount++;
+                        continue;
+                    }
+
+                    const rowData = {
+                        time: "-",
+                        slClickId: generateUUID(),
+                        country: "-",
+                        clickId: trackerName || "-",
+                        smartlinkId: "-",
+                        smartlinkName: trackerName || "-",
+                        payout: formatPayout(revenue)
+                    };
+                    tbody.appendChild(createRow(rowData));
+                    processedCount++;
                 }
-
-                // 2. SL CLICK ID (Generate Dummy UUID karena input tidak punya)
-                // Kita buat UUID statis untuk baris ini
-                const dummyUUID = generateUUID(); 
-
-                // 3. FORMAT PAYOUT
-                let payoutVal = parseFloat(rawPayout.replace(/[^0-9.]/g, ''));
-                if (isNaN(payoutVal)) payoutVal = 0;
-                // Format Indonesia: 3.3 -> 3,30
-                let formattedPayout = payoutVal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                // Hapus ,00 jika bulat, atau sesuaikan sesuai selera. Sesuai contoh user 2.500 $                 // 3.3 -> 3,3 (karena desimal)
-                formattedPayout += " $";
-
-                // 4. SMARTLINK ID
-                // Kita ambil Status (misal 200) sebagai ID, karena user minta Smartlink Name pakai Click ID
-                
-                // 5. SMARTLINK NAME
-                // User minta: "nama id" -> Kita pakai Click ID
-                
-                const rowData = {
-                    time: formattedTime,
-                    slClickId: dummyUUID,
-                    country: country,
-                    clickId: clickId,
-                    smartlinkId: statusVal,
-                    smartlinkName: clickId,
-                    payout: formattedPayout
-                };
-
-                tbody.appendChild(createRow(rowData));
-                processedCount++;
             }
+
+        } else if (isReportMode) {
+            // --- MODE REPORT EXCEL (KODE ASLI) ---
+            showStatus("Mode Terdeteksi: Report Excel (Filtering $0.00)...", "success");
+            
+            const hasHeader = firstLine.includes('click date');
+            let startIndex = hasHeader ? 1 : 0;
+
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i];
+                const cols = line.split('\t').map(c => c.trim());
+
+                if (cols.length >= 5) {
+                    const rawDate = cols[0];
+                    const clickId = cols[2];
+                    const country = cols[3];
+                    const rawPayout = cols[4];
+                    const statusVal = cols[5] || "-";
+
+                    // Filter Payout 0
+                    let cleanVal = rawPayout.replace(/[^0-9.,-]/g, '');
+                    if (cleanVal.includes('.') && cleanVal.includes(',')) cleanVal = cleanVal.replace(/\./g, '').replace(',', '.');
+                    else if (cleanVal.includes(',')) cleanVal = cleanVal.replace(',', '.');
+                    
+                    let val = parseFloat(cleanVal);
+
+                    if (val <= 0) {
+                        removedCount++;
+                        continue;
+                    }
+
+                    // Format Time
+                    let formattedTime = rawDate;
+                    if (rawDate.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
+                        const partsDate = rawDate.split(' ');
+                        const datePart = partsDate[0];
+                        const timePart = partsDate[1];
+                        const [month, day, year] = datePart.split('/');
+                        const m = month.length < 2 ? '0' + month : month;
+                        const d = day.length < 2 ? '0' + day : day;
+                        let t = "00:00";
+                        if (timePart) {
+                            const [h, min] = timePart.split(':');
+                            const hh = h.length < 2 ? '0' + h : h;
+                            t = hh + ":" + min;
+                        }
+                        formattedTime = `${d}.${m}.${year} ${t}`;
+                    }
+
+                    const rowData = {
+                        time: formattedTime,
+                        slClickId: generateUUID(),
+                        country: country,
+                        clickId: clickId,
+                        smartlinkId: statusVal,
+                        smartlinkName: clickId,
+                        payout: formatPayout(rawPayout)
+                    };
+                    tbody.appendChild(createRow(rowData));
+                    processedCount++;
+                }
+            }
+        } else {
+            showStatus("Format data tidak dikenali.", "error");
+            return;
         }
 
         if (processedCount > 0) {
             rowCountSpan.textContent = processedCount;
             resultArea.style.display = 'block';
-            showStatus(`Berhasil mengkonversi ${processedCount} baris data.`, "success");
+            let msg = `Berhasil: ${processedCount} baris.`;
+            if (removedCount > 0) msg += ` (Dihapus ${removedCount} baris $0.00)`;
+            showStatus(msg, "success");
         } else {
             resultArea.style.display = 'none';
-            showStatus("Gagal memproses data. Pastikan format benar.", "error");
+            showStatus("Semua data bernilai $0.00 atau format salah.", "error");
         }
     }
 
     // --- 3. HELPER FUNCTIONS ---
-    
-    // Fungsi buat UUID dummy acak
     function generateUUID() { 
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -288,18 +367,64 @@
         });
     }
 
+    function formatPayout(str) {
+        let clean = str.replace(/[^0-9.,-]/g, '');
+        if (clean.includes('.') && clean.includes(',')) {
+            clean = clean.replace(/\./g, '').replace(',', '.');
+        } else if (clean.includes(',')) {
+            clean = clean.replace(',', '.'); 
+        }
+        let val = parseFloat(clean);
+        if (isNaN(val)) val = 0;
+        let formattedNum = val.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return formattedNum + " $";
+    }
+
     function createRow(data) {
         const tr = document.createElement('tr');
+        const timeClass = data.time === "-" ? "empty-cell" : "";
+        const countryClass = data.country === "-" ? "empty-cell" : "";
+        const smIdClass = data.smartlinkId === "-" ? "empty-cell" : "";
+
         tr.innerHTML = `
-            <td>${data.time}</td>
+            <td class="${timeClass}">${data.time}</td>
             <td class="text-uuid">${data.slClickId}</td>
             <td><span class="badge bg-country">${data.country}</span></td>
             <td>${data.clickId}</td>
-            <td>${data.smartlinkId}</td>
+            <td class="${smIdClass}">${data.smartlinkId}</td>
             <td>${data.smartlinkName}</td>
             <td class="text-money">${data.payout}</td>
         `;
         return tr;
+    }
+
+    function copyOutput() {
+        const table = document.getElementById("outputTable");
+        if (!table) return;
+
+        let rows = [];
+        const headers = [];
+        table.querySelectorAll("th").forEach(th => headers.push(th.innerText));
+        rows.push(headers.join("\t"));
+
+        table.querySelectorAll("tbody tr").forEach(tr => {
+            const rowData = [];
+            tr.querySelectorAll("td").forEach(td => rowData.push(td.innerText));
+            rows.push(rowData.join("\t"));
+        });
+
+        const csvContent = rows.join("\n");
+
+        navigator.clipboard.writeText(csvContent).then(() => {
+            const originalText = document.querySelector('.btn-copy').innerHTML;
+            const btn = document.querySelector('.btn-copy');
+            btn.innerHTML = "✅ Copied!";
+            setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+            showStatus("Semua data berhasil disalin!", "success");
+        }).catch(err => {
+            console.error('Gagal menyalin: ', err);
+            showStatus("Gagal menyalin data.", "error");
+        });
     }
 
     function showStatus(msg, type) {

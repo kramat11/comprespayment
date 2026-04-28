@@ -73,7 +73,7 @@
         .btn-copy { background: var(--success); color: white; }
         .btn-copy:hover { background: #059669; }
         
-        .btn-sample { background: #e0f2fe; color: #0369a1; width: 100%; margin-top: 10px; border: 1px dashed #0ea5e9; }
+        .btn-sample { background: #e0f2fe; color: #0369a1; width: 100%; margin-top: 10px; border: 1px dashed #0ea5e9; justify-content: center;}
         .btn-sample:hover { background: #bae6fd; }
 
         .status-box {
@@ -120,12 +120,14 @@
 
 <div class="container">
     <header>
+        <h1></h1>
+        <p></p>
     </header>
 
     <div class="card">
-        <label class="label" for="rawInput">Input Data (khusus LP HAPUS Ratio&CTR SEBELUM konversi)</label>
-        <textarea id="rawInput" placeholder="Paste data Excel atau Stats di sini..."></textarea>
-
+        <label class="label" for="rawInput">Input Data (lp hapus ctr&ratio)</label>
+        <textarea id="rawInput" placeholder="Paste data Excel, Stats, atau Report di sini..."></textarea>
+    
         <div class="controls">
             <button class="btn-primary" onclick="processData()">🔄 Konversi Data</button>
             <button class="btn-secondary" onclick="clearData()">🗑️ Bersihkan</button>
@@ -166,22 +168,19 @@
 </div>
 
 <script>
-    // --- 1. SAMPLE DATA ---
+    // --- 1. SAMPLE DATA FUNCTIONS ---
     function loadSampleStats10() {
-        // Format Baru (10 Kolom - Ada metrik tambahan 0.0075, 0.0063)
         const stats = `Tracker	Hits	Uniques	Clicks	Conversions	Ratio	CTR	0.0075	0.0063	Revenue
 GAJAHBARU	1772	884	1052	4	0.224305556	119.00%	0.0075	0.0063	$6.60 
 jones1510	125	73	114	2	1:57	156.16%	0.074	0.0474	$5.40 
     1	1	1	0	1:∞	100.00%	0	0	$0.00 
 GAJAHBARU01	7	3	7	0	1:∞	233.33%	0	0	$0.00 
-ORTUSEIGHT	5	5	3	0	1:∞	60.00%	0	0	$0.00 
 Total	1910	966	1177	6	0.178472222	121.84%	0	0	$12.00`;
         document.getElementById('rawInput').value = stats;
         showStatus("Contoh Data Stats (10 Kolom) dimuat.", "success");
     }
 
     function loadSampleStats() {
-        // Format 8 Kolom (Lama)
         const stats = `Tracker	Hits	Uniques	Clicks	Conversions	Ratio	CTR	Revenue
 GAJAHBARU	1772	884	1052	4	0.224305556	119.00%	$6.60 
 jones1510	125	73	114	2	1:57	156.16%	$5.40`;
@@ -190,12 +189,24 @@ jones1510	125	73	114	2	1:57	156.16%	$5.40`;
     }
 
     function loadSampleReport() {
-        // Data Report Excel (Lama)
         const report = `Click Date	Conversion Date	Click ID	Country	Payout $	Status
 4/26/2026 2:33	4/26/2026 2:47	GLAD2GLOW	France	3.3	200
 4/26/2026 17:27	4/26/2026 17:51	GAJAHBARU	Morocco	0.03	200`;
         document.getElementById('rawInput').value = report;
         showStatus("Contoh Data Report dimuat.", "success");
+    }
+
+    function loadSampleNewReport() {
+        // Format Baru: Date | Source | Click ID | Subsource | Device | Country | Amount, $ | Status | Sub1
+        const report = `Date	Source	Click ID	Subsource	Device	Country	Amount, $	Status	Sub1
+2026-04-27 22:53:25	S: Adult dating 1	3f94b48b33f621edc41ecb7eb217f3a4de87c	ESTE	Mobile	United States	6	Conversion	ESTE
+2026-04-27 19:08:17	S: Adult dating 1	3f94b4d22baf2cd12f926ad35d3c9859aabaf	ESTE	Mobile	United States	6	Conversion	ESTE
+2026-04-27 16:44:10	S: Adult dating 1	3f94b49fded8f9985ebd99357bd08ffd3934a	GLAD2GLOW	Mobile	Belgium	3	Conversion	GLAD2GLOW
+2026-04-27 16:38:13	S: Adult dating 1	3f94b4f72ec6fc22f0477a7af83ed28207c09	GLAD2GLOW	Mobile	Germany	7	Conversion	GLAD2GLOW
+2026-04-17 00:08:24	S: Adult dating 1	3f940408fd202512fab82ab95c4145d69d1f8	PATRICK	Mobile	Algeria	0.225	Conversion	PATRICK
+2026-04-17 00:05:10	S: Adult dating 1	3f940408fd202512fab82ab95c0000000000	UNKNOWN	Mobile	United States	0	Conversion	UNKNOWN`;
+        document.getElementById('rawInput').value = report;
+        showStatus("Contoh Data Report (Format Baru) dimuat.", "success");
     }
 
     // --- 2. LOGIKA UTAMA (SMART DETECTION) ---
@@ -216,15 +227,22 @@ jones1510	125	73	114	2	1:57	156.16%	$5.40`;
         const lines = input.split(/\r?\n/).filter(line => line.trim() !== '');
         const firstLine = lines[0].toLowerCase();
         
-        // Cek Kata Kunci
+        // --- DETEKSI MODE ---
+        // 1. Stats Mode
         const isStatsMode = firstLine.includes('tracker') || firstLine.includes('revenue');
+        
+        // 2. Report Lama
         const isReportMode = firstLine.includes('click date') || /^\d{1,2}\/\d{1,2}\/\d{4}/.test(lines[0]);
+
+        // 3. Report Baru (Format Source)
+        const isNewSourceMode = (firstLine.includes('date') && firstLine.includes('source') && firstLine.includes('amount')) || 
+                                /^\d{4}-\d{2}-\d{2}/.test(lines[0]);
 
         let processedCount = 0;
         let removedCount = 0;
 
         if (isStatsMode) {
-            // --- MODE STATS (SUPPORT BANYAK KOLOM) ---
+            // --- MODE STATS ---
             showStatus("Mode Terdeteksi: Stats (Auto-Scan Kolom)...", "success");
             
             let startIndex = (firstLine.includes('tracker')) ? 1 : 0; 
@@ -234,28 +252,19 @@ jones1510	125	73	114	2	1:57	156.16%	$5.40`;
                 const cols = line.split('\t'); 
 
                 if (cols.length >= 2) {
-                    // AMBIL NAMA (Selalu Kolom Pertama)
                     const trackerName = cols[0].trim();
-
-                    // AMBIL REVENUE (Scan dari belakang ke depan - Smart Scanning)
                     let revenue = "-";
-                    // Loop dari index terakhir ke awal
                     for (let j = cols.length - 1; j >= 0; j--) {
                         const colContent = cols[j].trim();
-                        // Cari kolom yang ada simbol $ atau USD dan ada angka
                         if ((colContent.includes('$') || colContent.includes('USD')) && colContent.match(/[\d.,]+/)) {
                             revenue = colContent;
-                            break; // Ketemu, stop looping
+                            break; 
                         }
                     }
 
-                    // Skip baris "Total"
                     if (trackerName.toLowerCase() === 'total') continue;
-
-                    // Validasi minimal
                     if (revenue === "-") continue;
 
-                    // --- FILTER PAYOUT 0 ---
                     let cleanVal = revenue.replace(/[^0-9.,-]/g, '');
                     if (cleanVal.includes('.') && cleanVal.includes(',')) cleanVal = cleanVal.replace(/\./g, '').replace(',', '.');
                     else if (cleanVal.includes(',')) cleanVal = cleanVal.replace(',', '.');
@@ -281,9 +290,76 @@ jones1510	125	73	114	2	1:57	156.16%	$5.40`;
                 }
             }
 
+        } else if (isNewSourceMode) {
+            // --- MODE BARU: SOURCE REPORT ---
+            // Format: Date | Source | Click ID | Subsource | Device | Country | Amount, $ | Status | Sub1
+            showStatus("Mode Terdeteksi: Source Report (Format Baru)...", "success");
+            
+            const hasHeader = firstLine.includes('date');
+            let startIndex = hasHeader ? 1 : 0;
+
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i];
+                const cols = line.split('\t').map(c => c.trim());
+
+                if (cols.length >= 7) {
+                    const rawDate = cols[0]; 
+                    const source = cols[1];
+                    // const clickId = cols[2]; // Tidak dipakai untuk output Click Id
+                    const subsource = cols[3];
+                    const country = cols[5];
+                    const rawPayout = cols[6];
+                    const statusVal = cols[7] || "-";
+                    
+                    // Ambil Sub1 (Index 8) untuk dijadikan Click Id Output
+                    const sub1 = (cols.length > 8) ? cols[8] : "-";
+
+                    // Filter Payout 0
+                    let cleanVal = rawPayout.replace(/[^0-9.,-]/g, '');
+                    if (cleanVal.includes('.') && cleanVal.includes(',')) cleanVal = cleanVal.replace(/\./g, '').replace(',', '.');
+                    else if (cleanVal.includes(',')) cleanVal = cleanVal.replace(',', '.');
+                    
+                    let val = parseFloat(cleanVal);
+
+                    if (val <= 0) {
+                        removedCount++;
+                        continue;
+                    }
+
+                    // Format Time dari YYYY-MM-DD HH:MM:SS ke DD.MM.YYYY HH:MM
+                    let formattedTime = rawDate;
+                    if (rawDate.match(/^\d{4}-\d{2}-\d{2}/)) {
+                        const partsDate = rawDate.split(' ');
+                        const datePart = partsDate[0];
+                        const timePart = partsDate[1];
+                        
+                        const [year, month, day] = datePart.split('-');
+                        const [h, min] = timePart ? timePart.split(':') : ['00', '00'];
+
+                        formattedTime = `${day}.${month}.${year} ${h}:${min}`;
+                    }
+
+                    // Mapping Update sesuai request:
+                    // Click Id Output = Sub1
+                    // Smartlink Name = Subsource
+                    // Smartlink Id = Source
+                    const rowData = {
+                        time: formattedTime,
+                        slClickId: generateUUID(),
+                        country: country,
+                        clickId: sub1, 
+                        smartlinkId: source,
+                        smartlinkName: subsource,
+                        payout: formatPayout(rawPayout)
+                    };
+                    tbody.appendChild(createRow(rowData));
+                    processedCount++;
+                }
+            }
+
         } else if (isReportMode) {
-            // --- MODE REPORT EXCEL (KODE ASLI) ---
-            showStatus("Mode Terdeteksi: Report Excel (Filtering $0.00)...", "success");
+            // --- MODE REPORT EXCEL (LAMA) ---
+            showStatus("Mode Terdeteksi: Report Excel (Lama)...", "success");
             
             const hasHeader = firstLine.includes('click date');
             let startIndex = hasHeader ? 1 : 0;

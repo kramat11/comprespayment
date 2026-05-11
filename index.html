@@ -8,11 +8,13 @@
         :root {
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
-            --bg: #f8fafc;
+            --bg: #f1f5f9;
             --card-bg: #ffffff;
             --text: #1e293b;
             --border: #cbd5e1;
             --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
         }
 
         body {
@@ -21,12 +23,22 @@
             color: var(--text);
             margin: 0;
             padding: 20px;
+            line-height: 1.5;
         }
 
-        .container { max-width: 1300px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 30px; }
-        h1 { color: var(--primary); margin-bottom: 10px; font-size: 24px; }
-        p { color: #64748b; font-size: 14px; }
+        .container { max-width: 1280px; margin: 0 auto; }
+        
+        header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        h1 { color: var(--primary); margin: 0 0 10px 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+        p { color: #64748b; font-size: 14px; margin: 0; }
 
         .card {
             background: var(--card-bg);
@@ -34,24 +46,27 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             padding: 25px;
             margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
         }
 
-        .label { display: block; font-weight: 600; margin-bottom: 8px; color: #334155; }
+        .label { display: block; font-weight: 600; margin-bottom: 8px; color: #334155; font-size: 14px; }
 
         textarea {
             width: 100%;
-            height: 200px;
+            height: 180px;
             padding: 15px;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
             border-radius: 8px;
             font-family: 'Consolas', 'Monaco', monospace;
             font-size: 13px;
             resize: vertical;
             box-sizing: border-box;
+            background-color: #f8fafc;
+            transition: border-color 0.2s;
         }
-        textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+        textarea:focus { outline: none; border-color: var(--primary); background-color: #fff; }
 
-        .controls { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .controls { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         
         button {
             padding: 10px 20px;
@@ -60,60 +75,56 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
-            transition: background 0.2s;
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
+        button:active { transform: translateY(1px); }
 
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); }
-        .btn-secondary { background: #94a3b8; color: white; }
-        .btn-secondary:hover { background: #64748b; }
+        .btn-secondary { background: #e2e8f0; color: #475569; }
+        .btn-secondary:hover { background: #cbd5e1; color: #1e293b; }
         .btn-copy { background: var(--success); color: white; }
         .btn-copy:hover { background: #059669; }
         
-        .btn-sample { background: #e0f2fe; color: #0369a1; width: 100%; margin-top: 10px; border: 1px dashed #0ea5e9; justify-content: center;}
-        .btn-sample:hover { background: #bae6fd; }
+        .btn-sample { background: #eff6ff; color: var(--primary); border: 1px solid #bfdbfe; justify-content: center; font-size: 13px; padding: 8px 15px;}
+        .btn-sample:hover { background: #dbeafe; border-color: #93c5fd; }
 
         .status-box {
-            margin-top: 15px; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; display: none;
+            margin-top: 15px; padding: 12px 15px; border-radius: 6px; font-size: 13px; font-weight: 600; display: none; animation: fadeIn 0.3s ease;
         }
-        .status-success { background: #dcfce7; color: #166534; }
-        .status-error { background: #fee2e2; color: #991b1b; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .status-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .status-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .status-info { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
 
-        .result-area { display: none; margin-top: 20px; }
-        .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .result-actions { display: flex; gap: 10px; align-items: center; }
-
-        .table-responsive { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+        .result-area { display: none; margin-top: 25px; animation: slideDown 0.4s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .result-title { font-size: 18px; font-weight: 700; color: var(--text); border-left: 4px solid var(--primary); padding-left: 10px; }
+        .result-meta { font-size: 12px; color: #64748b; margin-left: 15px; }
         
+        .table-responsive { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; max-height: 500px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
         th {
-            background: #f1f5f9;
-            text-align: left;
-            padding: 12px 15px;
-            border-bottom: 2px solid var(--border);
-            color: #475569;
-            font-weight: 700;
+            background: #f8fafc; text-align: left; padding: 12px 15px; border-bottom: 2px solid var(--border);
+            color: #475569; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;
+            position: sticky; top: 0; z-index: 10;
         }
-        td { padding: 10px 15px; border-bottom: 1px solid #e2e8f0; }
+        td { padding: 10px 15px; border-bottom: 1px solid #f1f5f9; color: #334155; }
         tr:hover { background-color: #f8fafc; }
 
-        /* Helper Classes */
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .bg-country { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
-        .text-money { font-weight: 700; color: var(--success); }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .bg-country { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; min-width: 40px; text-align: center; }
+        .text-money { font-weight: 700; color: var(--success); font-family: 'Consolas', monospace; }
         .text-uuid { font-family: monospace; color: #94a3b8; font-size: 11px; }
-        .empty-cell { color: #ccc; font-style: italic; }
+        .empty-cell { color: #cbd5e1; font-style: italic; }
+        
+        .sample-section { margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border); }
+        .sample-title { font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 8px; display: block; }
     </style>
 </head>
 <body>
@@ -125,8 +136,8 @@
     </header>
 
     <div class="card">
-        <label class="label" for="rawInput">Input Data (lp hapus ctr&ratio)</label>
-        <textarea id="rawInput" placeholder="Paste data Excel, Stats, atau Report di sini..."></textarea>
+        <label class="label" for="rawInput">Input Data</label>
+        <textarea id="rawInput" placeholder="Paste data Excel/Report di sini..."></textarea>
     
         <div class="controls">
             <button class="btn-primary" onclick="processData()">🔄 Konversi Data</button>
@@ -135,14 +146,25 @@
 
         <div id="statusMsg" class="status-box"></div>
 
+        <!-- Sample Buttons -->
+        <div class="sample-section">
+            <span class="sample-title"> Contoh Data:</span>
+            <div class="controls" style="margin-top: 0;">
+                <button class="btn-sample" onclick="loadSampleFull()">Full World Data</button>
+                <button class="btn-sample" onclick="loadSampleSmartlinkPanel()">Panel Smartlink</button>
+                <button class="btn-sample" onclick="loadSampleReport()">Report Excel (Lama)</button>
+                <button class="btn-sample" onclick="loadSampleStats()">Stats Mode</button>
+            </div>
+        </div>
+
         <div id="resultArea" class="result-area">
             <div class="result-header">
-                <div>
-                    <h3>Hasil Konversi</h3>
-                    <div style="font-size: 12px; color: #64748b;">Total Baris Valid (Non-Zero): <span id="rowCount">0</span></div>
+                <div style="display: flex; align-items: baseline;">
+                    <div class="result-title">Hasil Konversi</div>
+                    <div class="result-meta"> <span id="rowCount"></span></div>
                 </div>
                 <div class="result-actions">
-                    <button class="btn-copy" onclick="copyOutput()">📋 Copy All Output</button>
+                    <button class="btn-copy" onclick="copyOutput()">📋 Copy Output (TSV)</button>
                 </div>
             </div>
             <div class="table-responsive">
@@ -159,7 +181,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Data hasil akan muncul di sini -->
+                        <!-- Rows injected here -->
                     </tbody>
                 </table>
             </div>
@@ -168,274 +190,333 @@
 </div>
 
 <script>
-    // --- 1. SAMPLE DATA FUNCTIONS ---
-    function loadSampleStats10() {
-        const stats = `Tracker	Hits	Uniques	Clicks	Conversions	Ratio	CTR	0.0075	0.0063	Revenue
-GAJAHBARU	1772	884	1052	4	0.224305556	119.00%	0.0075	0.0063	$6.60 
-jones1510	125	73	114	2	1:57	156.16%	0.074	0.0474	$5.40 
-    1	1	1	0	1:∞	100.00%	0	0	$0.00 
-GAJAHBARU01	7	3	7	0	1:∞	233.33%	0	0	$0.00 
-Total	1910	966	1177	6	0.178472222	121.84%	0	0	$12.00`;
-        document.getElementById('rawInput').value = stats;
-        showStatus("Contoh Data Stats (10 Kolom) dimuat.", "success");
+    // --- 1. DATABASE NEGARA LENGKAP (ISO 3166-1) ---
+    const countryMap = {
+        "afghanistan": "AF", "Åland islands": "AX", "albania": "AL", "algeria": "DZ", "american samoa": "AS",
+        "andorra": "AD", "angola": "AO", "anguilla": "AI", "antarctica": "AQ", "antigua and barbuda": "AG",
+        "argentina": "AR", "armenia": "AM", "aruba": "AW", "australia": "AU", "austria": "AT",
+        "azerbaijan": "AZ", "bahamas": "BS", "bahrain": "BH", "bangladesh": "BD", "barbados": "BB",
+        "belarus": "BY", "belgium": "BE", "belize": "BZ", "benin": "BJ", "bermuda": "BM", "bhutan": "BT",
+        "bolivia": "BO", "bosnia and herzegovina": "BA", "botswana": "BW", "bouvet island": "BV",
+        "brazil": "BR", "british indian ocean territory": "IO", "brunei": "BN", "bulgaria": "BG",
+        "burkina faso": "BF", "burundi": "BI", "cambodia": "KH", "cameroon": "CM", "canada": "CA",
+        "cape verde": "CV", "cayman islands": "KY", "central african republic": "CF", "chad": "TD",
+        "chile": "CL", "china": "CN", "christmas island": "CX", "cocos (keeling) islands": "CC",
+        "colombia": "CO", "comoros": "KM", "congo": "CG", "congo (drc)": "CD", "cook islands": "CK",
+        "costa rica": "CR", "côte d'ivoire": "CI", "cote d'ivoire": "CI", "ivory coast": "CI",
+        "croatia": "HR", "cuba": "CU", "cyprus": "CY", "czech republic": "CZ",
+        "denmark": "DK", "djibouti": "DJ", "dominica": "DM", "dominican republic": "DO",
+        "ecuador": "EC", "egypt": "EG", "el salvador": "SV", "equatorial guinea": "GQ", "eritrea": "ER",
+        "estonia": "EE", "ethiopia": "ET", "falkland islands": "FK", "faroe islands": "FO", "fiji": "FJ",
+        "finland": "FI", "france": "FR", "french guiana": "GF", "french polynesia": "PF", "french southern territories": "TF",
+        "gabon": "GA", "gambia": "GM", "georgia": "GE", "germany": "DE", "ghana": "GH", "gibraltar": "GI",
+        "greece": "GR", "greenland": "GL", "grenada": "GD", "guadeloupe": "GP", "guam": "GU", "guatemala": "GT",
+        "guernsey": "GG", "guinea": "GN", "guinea-bissau": "GW", "guyana": "GY", "haiti": "HT",
+        "heard island and mcdonald islands": "HM", "holy see": "VA", "honduras": "HN", "hong kong": "HK",
+        "hungary": "HU", "iceland": "IS", "india": "IN", "indonesia": "ID", "iran": "IR", "iraq": "IQ",
+        "ireland": "IE", "isle of man": "IM", "israel": "IL", "italy": "IT", "jamaica": "JM", "japan": "JP",
+        "jersey": "JE", "jordan": "JO", "kazakhstan": "KZ", "kenya": "KE", "kiribati": "KI", "north korea": "KP",
+        "south korea": "KR", "korea": "KR", "kuwait": "KW", "kyrgyzstan": "KG", "laos": "LA", "latvia": "LV", "lebanon": "LB",
+        "lesotho": "LS", "liberia": "LR", "libya": "LY", "liechtenstein": "LI", "lithuania": "LT", "luxembourg": "LU",
+        "macao": "MO", "north macedonia": "MK", "madagascar": "MG", "malawi": "MW", "malaysia": "MY",
+        "maldives": "MV", "mali": "ML", "malta": "MT", "marshall islands": "MH", "martinique": "MQ",
+        "mauritania": "MR", "mauritius": "MU", "mayotte": "YT", "mexico": "MX", "micronesia": "FM",
+        "moldova": "MD", "monaco": "MC", "mongolia": "MN", "montenegro": "ME", "montserrat": "MS",
+        "morocco": "MA", "mozambique": "MZ", "myanmar": "MM", "namibia": "NA", "nauru": "NR", "nepal": "NP",
+        "netherlands": "NL", "holland": "NL", "new caledonia": "NC", "new zealand": "NZ", "nicaragua": "NI", "niger": "NE",
+        "nigeria": "NG", "niue": "NU", "norfolk island": "NF", "northern mariana islands": "MP",
+        "norway": "NO", "oman": "OM", "pakistan": "PK", "palau": "PW", "palestine": "PS", "panama": "PA",
+        "papua new guinea": "PG", "paraguay": "PY", "peru": "PE", "philippines": "PH", "pitcairn": "PN",
+        "poland": "PL", "portugal": "PT", "puerto rico": "PR", "qatar": "QA", "réunion": "RE", "romania": "RO",
+        "russia": "RU", "rwanda": "RW", "saint barthélemy": "BL", "saint helena": "SH", "saint kitts and nevis": "KN",
+        "saint lucia": "LC", "saint martin": "MF", "saint pierre and miquelon": "PM", "saint vincent and the grenadines": "VC",
+        "samoa": "WS", "san marino": "SM", "são tomé and príncipe": "ST", "saudi arabia": "SA", "senegal": "SN",
+        "serbia": "RS", "seychelles": "SC", "sierra leone": "SL", "singapore": "SG", "sint maarten": "SX",
+        "slovakia": "SK", "slovenia": "SI", "solomon islands": "SB", "somalia": "SO", "south africa": "ZA",
+        "south georgia and the south sandwich islands": "GS", "south sudan": "SS", "spain": "ES", "sri lanka": "LK",
+        "sudan": "SD", "suriname": "SR", "svalbard and jan mayen": "SJ", "eswatini": "SZ", "sweden": "SE",
+        "switzerland": "CH", "syria": "SY", "taiwan": "TW", "tajikistan": "TJ", "tanzania": "TZ", "thailand": "TH",
+        "timor-leste": "TL", "togo": "TG", "tokelau": "TK", "tonga": "TO", "trinidad and tobago": "TT",
+        "tunisia": "TN", "turkey": "TR", "turkmenistan": "TM", "turks and caicos islands": "TC", "tuvalu": "TV",
+        "uganda": "UG", "ukraine": "UA", "united arab emirates": "AE", "uae": "AE", "united kingdom": "GB", "uk": "GB", "england": "GB", "scotland": "GB", "wales": "GB", "northern ireland": "GB",
+        "united states": "US", "usa": "US", "america": "US", "united states of america": "US",
+        "u.s. minor outlying islands": "UM", "uruguay": "UY", "uzbekistan": "UZ", "vanuatu": "VU",
+        "venezuela": "VE", "vietnam": "VN", "british virgin islands": "VG", "u.s. virgin islands": "VI",
+        "wallis and futuna": "WF", "western sahara": "EH", "yemen": "YE", "zambia": "ZM", "zimbabwe": "ZW",
+        
+        // Additional common aliases
+        "vatican": "VA", "korea, republic of": "KR", "korea, democratic people's republic of": "KP",
+        "iran (islamic republic of)": "IR", "russian federation": "RU", "syrian arab republic": "SY",
+        "bolivia (plurinational state of)": "BO", "venezuela (bolivarian republic of)": "VE",
+        "tanzania, united republic of": "TZ", "côte d’ivoire": "CI"
+    };
+
+    // Fungsi Cerdas Negara
+    function getCountryCode(name) {
+        if (!name) return "-";
+        
+        // 1. Bersihkan karakter aneh: backslash (\), kutip ("), koma ekstra di belakang
+        let cleanName = name.toString().trim().replace(/[\\"]/g, '').replace(/,\s*$/, '');
+        
+        // 2. Lowercase untuk pencarian
+        let searchName = cleanName.toLowerCase();
+        
+        // 3. Cek jika sudah kode 2 huruf
+        if (/^[a-z]{2}$/i.test(searchName)) {
+            return searchName.toUpperCase();
+        }
+
+        // 4. Cek persis di map
+        if (countryMap[searchName]) {
+            return countryMap[searchName].toUpperCase();
+        }
+
+        // 5. SPECIAL CASE: Handle "Tanzania, United Republic Of"
+        // Ambil kata pertama saja (sebelum koma pertama)
+        let firstWord = searchName.split(/[\s,]+/)[0];
+        
+        if (countryMap[firstWord]) {
+            return countryMap[firstWord].toUpperCase();
+        }
+
+        // Jika tidak ketemu, kembalikan nama asli (tapi sudah dibersihkan)
+        return cleanName;
+    }
+
+
+    // --- 2. SAMPLE DATA FUNCTIONS ---
+    
+    function loadSampleFull() {
+        const report = `Click Date	Conversion Date	Smartlink ID	Smartlink Name	Click ID	Token 1	Country	Payout $	Status
+3/3/2026 8:27	4/25/2026 9:23	2150610	TFORCE	PATRICK	PATRICK	Afghanistan	0.075	200
+4/25/2026 10:00	4/25/2026 10:21	2150610	TFORCE	GAJAHBARU	GAJAHBARU	Vatican	0.03	200
+4/25/2026 10:41	4/25/2026 11:07	2150610	TFORCE	GAJAHBARU	GAJAHBARU	Tanzania, United Republic Of	0.015	200
+3/11/2026 5:05	4/26/2026 2:26	2150610	TFORCE	PATRICK02	PATRICK02	Saint Kitts and Nevis	0.075	200
+3/12/2026 6:00	4/26/2026 3:00	2150610	TFORCE	JOHN	JOHN	Côte d'Ivoire	1.00	200`;
+        document.getElementById('rawInput').value = report;
+        showStatus("Contoh Database Dunia Lengkap dimuat.", "info");
+    }
+
+    function loadSampleSmartlinkPanel() {
+        const report = `Click Date	Conversion Date	Smartlink ID	Smartlink Name	Click ID	Token 1	Country	Payout $	Status
+3/3/2026 8:27	4/25/2026 9:23	2150610	TFORCE	PATRICK	PATRICK	Ghana	0.075	200
+4/25/2026 10:00	4/25/2026 10:21	2150610	TFORCE	GAJAHBARU	GAJAHBARU	Zambia	0.03	200`;
+        document.getElementById('rawInput').value = report;
+        showStatus("Contoh Data Panel Smartlink dimuat.", "info");
     }
 
     function loadSampleStats() {
         const stats = `Tracker	Hits	Uniques	Clicks	Conversions	Ratio	CTR	Revenue
-GAJAHBARU	1772	884	1052	4	0.224305556	119.00%	$6.60 
+GAJAHBARU	1772	884	1052	4	0.224	119.00%	$6.60 
 jones1510	125	73	114	2	1:57	156.16%	$5.40`;
         document.getElementById('rawInput').value = stats;
-        showStatus("Contoh Data Stats (8 Kolom) dimuat.", "success");
+        showStatus("Contoh Data Stats dimuat.", "info");
     }
 
     function loadSampleReport() {
         const report = `Click Date	Conversion Date	Click ID	Country	Payout $	Status
 4/26/2026 2:33	4/26/2026 2:47	GLAD2GLOW	France	3.3	200
-4/26/2026 17:27	4/26/2026 17:51	GAJAHBARU	Morocco	0.03	200`;
+4/26/2026 17:27	4/26/2026 17:51	GAJAHBARU	United States	0.03	200`;
         document.getElementById('rawInput').value = report;
-        showStatus("Contoh Data Report dimuat.", "success");
+        showStatus("Contoh Data Report dimuat.", "info");
     }
 
-    function loadSampleNewReport() {
-        // Format Baru: Date | Source | Click ID | Subsource | Device | Country | Amount, $ | Status | Sub1
-        const report = `Date	Source	Click ID	Subsource	Device	Country	Amount, $	Status	Sub1
-2026-04-27 22:53:25	S: Adult dating 1	3f94b48b33f621edc41ecb7eb217f3a4de87c	ESTE	Mobile	United States	6	Conversion	ESTE
-2026-04-27 19:08:17	S: Adult dating 1	3f94b4d22baf2cd12f926ad35d3c9859aabaf	ESTE	Mobile	United States	6	Conversion	ESTE
-2026-04-27 16:44:10	S: Adult dating 1	3f94b49fded8f9985ebd99357bd08ffd3934a	GLAD2GLOW	Mobile	Belgium	3	Conversion	GLAD2GLOW
-2026-04-27 16:38:13	S: Adult dating 1	3f94b4f72ec6fc22f0477a7af83ed28207c09	GLAD2GLOW	Mobile	Germany	7	Conversion	GLAD2GLOW
-2026-04-17 00:08:24	S: Adult dating 1	3f940408fd202512fab82ab95c4145d69d1f8	PATRICK	Mobile	Algeria	0.225	Conversion	PATRICK
-2026-04-17 00:05:10	S: Adult dating 1	3f940408fd202512fab82ab95c0000000000	UNKNOWN	Mobile	United States	0	Conversion	UNKNOWN`;
-        document.getElementById('rawInput').value = report;
-        showStatus("Contoh Data Report (Format Baru) dimuat.", "success");
-    }
-
-    // --- 2. LOGIKA UTAMA (SMART DETECTION) ---
+    // --- 3. LOGIKA UTAMA (PROCESS DATA) ---
     function processData() {
         const input = document.getElementById('rawInput').value.trim();
         const tbody = document.querySelector('#outputTable tbody');
-        const statusMsg = document.getElementById('statusMsg');
         const resultArea = document.getElementById('resultArea');
         const rowCountSpan = document.getElementById('rowCount');
 
         tbody.innerHTML = '';
         
         if (!input) {
-            showStatus("Silakan masukkan data!", "error");
+            showStatus("Silakan masukkan data terlebih dahulu!", "error");
             return;
         }
 
         const lines = input.split(/\r?\n/).filter(line => line.trim() !== '');
         const firstLine = lines[0].toLowerCase();
         
-        // --- DETEKSI MODE ---
-        // 1. Stats Mode
-        const isStatsMode = firstLine.includes('tracker') || firstLine.includes('revenue');
+        // --- DETEKSI MODE (Priority Order) ---
+        const isSmartlinkPanel = (firstLine.includes('smartlink id') && firstLine.includes('token 1')) || 
+                                (firstLine.includes('click date') && firstLine.includes('token 1'));
         
-        // 2. Report Lama
-        const isReportMode = firstLine.includes('click date') || /^\d{1,2}\/\d{1,2}\/\d{4}/.test(lines[0]);
-
-        // 3. Report Baru (Format Source)
         const isNewSourceMode = (firstLine.includes('date') && firstLine.includes('source') && firstLine.includes('amount')) || 
                                 /^\d{4}-\d{2}-\d{2}/.test(lines[0]);
 
+        const isStatsMode = firstLine.includes('tracker') || (firstLine.includes('revenue') && !firstLine.includes('payout $'));
+        
+        const isReportMode = firstLine.includes('click date') || /^\d{1,2}\/\d{1,2}\/\d{4}/.test(lines[0]);
+
         let processedCount = 0;
         let removedCount = 0;
+        let modeName = "Unknown";
 
-        if (isStatsMode) {
-            // --- MODE STATS ---
-            showStatus("Mode Terdeteksi: Stats (Auto-Scan Kolom)...", "success");
-            
-            let startIndex = (firstLine.includes('tracker')) ? 1 : 0; 
+        // --- LOGIKA PANEL SMARTLINK ---
+        if (isSmartlinkPanel) {
+            modeName = "Panel Smartlink (v2.2)";
+            showStatus("Mode Terdeteksi: Panel Smartlink...", "info");
 
-            for (let i = startIndex; i < lines.length; i++) {
-                const line = lines[i];
-                const cols = line.split('\t'); 
-
-                if (cols.length >= 2) {
-                    const trackerName = cols[0].trim();
-                    let revenue = "-";
-                    for (let j = cols.length - 1; j >= 0; j--) {
-                        const colContent = cols[j].trim();
-                        if ((colContent.includes('$') || colContent.includes('USD')) && colContent.match(/[\d.,]+/)) {
-                            revenue = colContent;
-                            break; 
-                        }
-                    }
-
-                    if (trackerName.toLowerCase() === 'total') continue;
-                    if (revenue === "-") continue;
-
-                    let cleanVal = revenue.replace(/[^0-9.,-]/g, '');
-                    if (cleanVal.includes('.') && cleanVal.includes(',')) cleanVal = cleanVal.replace(/\./g, '').replace(',', '.');
-                    else if (cleanVal.includes(',')) cleanVal = cleanVal.replace(',', '.');
-                    
-                    let val = parseFloat(cleanVal);
-                    
-                    if (val <= 0) {
-                        removedCount++;
-                        continue;
-                    }
-
-                    const rowData = {
-                        time: "-",
-                        slClickId: generateUUID(),
-                        country: "-",
-                        clickId: trackerName || "-",
-                        smartlinkId: "-",
-                        smartlinkName: trackerName || "-",
-                        payout: formatPayout(revenue)
-                    };
-                    tbody.appendChild(createRow(rowData));
-                    processedCount++;
-                }
-            }
-
-        } else if (isNewSourceMode) {
-            // --- MODE BARU: SOURCE REPORT ---
-            // Format: Date | Source | Click ID | Subsource | Device | Country | Amount, $ | Status | Sub1
-            showStatus("Mode Terdeteksi: Source Report (Format Baru)...", "success");
-            
-            const hasHeader = firstLine.includes('date');
-            let startIndex = hasHeader ? 1 : 0;
-
-            for (let i = startIndex; i < lines.length; i++) {
-                const line = lines[i];
-                const cols = line.split('\t').map(c => c.trim());
-
-                if (cols.length >= 7) {
-                    const rawDate = cols[0]; 
-                    const source = cols[1];
-                    // const clickId = cols[2]; // Tidak dipakai untuk output Click Id
-                    const subsource = cols[3];
-                    const country = cols[5];
-                    const rawPayout = cols[6];
-                    const statusVal = cols[7] || "-";
-                    
-                    // Ambil Sub1 (Index 8) untuk dijadikan Click Id Output
-                    const sub1 = (cols.length > 8) ? cols[8] : "-";
-
-                    // Filter Payout 0
-                    let cleanVal = rawPayout.replace(/[^0-9.,-]/g, '');
-                    if (cleanVal.includes('.') && cleanVal.includes(',')) cleanVal = cleanVal.replace(/\./g, '').replace(',', '.');
-                    else if (cleanVal.includes(',')) cleanVal = cleanVal.replace(',', '.');
-                    
-                    let val = parseFloat(cleanVal);
-
-                    if (val <= 0) {
-                        removedCount++;
-                        continue;
-                    }
-
-                    // Format Time dari YYYY-MM-DD HH:MM:SS ke DD.MM.YYYY HH:MM
-                    let formattedTime = rawDate;
-                    if (rawDate.match(/^\d{4}-\d{2}-\d{2}/)) {
-                        const partsDate = rawDate.split(' ');
-                        const datePart = partsDate[0];
-                        const timePart = partsDate[1];
-                        
-                        const [year, month, day] = datePart.split('-');
-                        const [h, min] = timePart ? timePart.split(':') : ['00', '00'];
-
-                        formattedTime = `${day}.${month}.${year} ${h}:${min}`;
-                    }
-
-                    // Mapping Update sesuai request:
-                    // Click Id Output = Sub1
-                    // Smartlink Name = Subsource
-                    // Smartlink Id = Source
-                    const rowData = {
-                        time: formattedTime,
-                        slClickId: generateUUID(),
-                        country: country,
-                        clickId: sub1, 
-                        smartlinkId: source,
-                        smartlinkName: subsource,
-                        payout: formatPayout(rawPayout)
-                    };
-                    tbody.appendChild(createRow(rowData));
-                    processedCount++;
-                }
-            }
-
-        } else if (isReportMode) {
-            // --- MODE REPORT EXCEL (LAMA) ---
-            showStatus("Mode Terdeteksi: Report Excel (Lama)...", "success");
-            
             const hasHeader = firstLine.includes('click date');
             let startIndex = hasHeader ? 1 : 0;
 
             for (let i = startIndex; i < lines.length; i++) {
                 const line = lines[i];
                 const cols = line.split('\t').map(c => c.trim());
+                if (cols.length < 8) continue;
 
-                if (cols.length >= 5) {
-                    const rawDate = cols[0];
-                    const clickId = cols[2];
-                    const country = cols[3];
-                    const rawPayout = cols[4];
-                    const statusVal = cols[5] || "-";
+                const rawDate = cols[0];
+                const smartlinkId = cols[2];
+                const smartlinkName = cols[3];
+                const clickId = cols[4];
+                const countryRaw = cols[6];
+                const rawPayout = cols[7];
 
-                    // Filter Payout 0
-                    let cleanVal = rawPayout.replace(/[^0-9.,-]/g, '');
-                    if (cleanVal.includes('.') && cleanVal.includes(',')) cleanVal = cleanVal.replace(/\./g, '').replace(',', '.');
-                    else if (cleanVal.includes(',')) cleanVal = cleanVal.replace(',', '.');
-                    
-                    let val = parseFloat(cleanVal);
+                let val = parseMoney(rawPayout);
+                if (val <= 0) { removedCount++; continue; }
 
-                    if (val <= 0) {
-                        removedCount++;
-                        continue;
+                let formattedTime = formatDateTime(rawDate, 'us');
+
+                const rowData = {
+                    time: formattedTime,
+                    slClickId: generateUUID(),
+                    country: getCountryCode(countryRaw),
+                    clickId: clickId,
+                    smartlinkId: smartlinkId,
+                    smartlinkName: smartlinkName,
+                    payout: formatPayout(rawPayout)
+                };
+                tbody.appendChild(createRow(rowData));
+                processedCount++;
+            }
+
+        } 
+        else if (isNewSourceMode) {
+            modeName = "Source Report";
+            const hasHeader = firstLine.includes('date');
+            let startIndex = hasHeader ? 1 : 0;
+
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i];
+                const cols = line.split('\t').map(c => c.trim());
+                if (cols.length < 7) continue;
+
+                const rawDate = cols[0]; 
+                const source = cols[1];
+                const subsource = cols[3];
+                const countryRaw = cols[5];
+                const rawPayout = cols[6];
+                const sub1 = (cols.length > 8) ? cols[8] : "-";
+
+                let val = parseMoney(rawPayout);
+                if (val <= 0) { removedCount++; continue; }
+
+                let formattedTime = formatDateTime(rawDate, 'iso');
+                
+                const rowData = {
+                    time: formattedTime,
+                    slClickId: generateUUID(),
+                    country: getCountryCode(countryRaw),
+                    clickId: sub1, 
+                    smartlinkId: source,
+                    smartlinkName: subsource,
+                    payout: formatPayout(rawPayout)
+                };
+                tbody.appendChild(createRow(rowData));
+                processedCount++;
+            }
+
+        } else if (isStatsMode) {
+            modeName = "Stats Mode";
+            let startIndex = (firstLine.includes('tracker')) ? 1 : 0; 
+
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i];
+                const cols = line.split('\t'); 
+                if (cols.length < 2) continue;
+
+                const trackerName = cols[0].trim();
+                let revenue = "-";
+                for (let j = cols.length - 1; j >= 0; j--) {
+                    const colContent = cols[j].trim();
+                    if ((colContent.includes('$') || colContent.includes('USD')) && colContent.match(/[\d.,]+/)) {
+                        revenue = colContent;
+                        break; 
                     }
-
-                    // Format Time
-                    let formattedTime = rawDate;
-                    if (rawDate.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
-                        const partsDate = rawDate.split(' ');
-                        const datePart = partsDate[0];
-                        const timePart = partsDate[1];
-                        const [month, day, year] = datePart.split('/');
-                        const m = month.length < 2 ? '0' + month : month;
-                        const d = day.length < 2 ? '0' + day : day;
-                        let t = "00:00";
-                        if (timePart) {
-                            const [h, min] = timePart.split(':');
-                            const hh = h.length < 2 ? '0' + h : h;
-                            t = hh + ":" + min;
-                        }
-                        formattedTime = `${d}.${m}.${year} ${t}`;
-                    }
-
-                    const rowData = {
-                        time: formattedTime,
-                        slClickId: generateUUID(),
-                        country: country,
-                        clickId: clickId,
-                        smartlinkId: statusVal,
-                        smartlinkName: clickId,
-                        payout: formatPayout(rawPayout)
-                    };
-                    tbody.appendChild(createRow(rowData));
-                    processedCount++;
                 }
+
+                if (trackerName.toLowerCase() === 'total') continue;
+                if (revenue === "-") continue;
+
+                let val = parseMoney(revenue);
+                if (val <= 0) { removedCount++; continue; }
+
+                const rowData = {
+                    time: "-",
+                    slClickId: generateUUID(),
+                    country: "-",
+                    clickId: trackerName,
+                    smartlinkId: "-",
+                    smartlinkName: trackerName,
+                    payout: formatPayout(revenue)
+                };
+                tbody.appendChild(createRow(rowData));
+                processedCount++;
+            }
+
+        } else if (isReportMode) {
+            modeName = "Old Report Mode";
+            const hasHeader = firstLine.includes('click date');
+            let startIndex = hasHeader ? 1 : 0;
+
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i];
+                const cols = line.split('\t').map(c => c.trim());
+                if (cols.length < 5) continue;
+
+                const rawDate = cols[0];
+                const clickId = cols[2];
+                const countryRaw = cols[3];
+                const rawPayout = cols[4];
+                const statusVal = cols[5] || "-";
+
+                let val = parseMoney(rawPayout);
+                if (val <= 0) { removedCount++; continue; }
+
+                let formattedTime = formatDateTime(rawDate, 'us');
+
+                const rowData = {
+                    time: formattedTime,
+                    slClickId: generateUUID(),
+                    country: getCountryCode(countryRaw),
+                    clickId: clickId,
+                    smartlinkId: statusVal,
+                    smartlinkName: clickId,
+                    payout: formatPayout(rawPayout)
+                };
+                tbody.appendChild(createRow(rowData));
+                processedCount++;
             }
         } else {
             showStatus("Format data tidak dikenali.", "error");
             return;
         }
 
+        // Final Output
         if (processedCount > 0) {
             rowCountSpan.textContent = processedCount;
             resultArea.style.display = 'block';
-            let msg = `Berhasil: ${processedCount} baris.`;
+            let msg = `Mode: <b>${modeName}</b> | Berhasil: ${processedCount} baris.`;
             if (removedCount > 0) msg += ` (Dihapus ${removedCount} baris $0.00)`;
             showStatus(msg, "success");
         } else {
             resultArea.style.display = 'none';
-            showStatus("Semua data bernilai $0.00 atau format salah.", "error");
+            showStatus("Tidak ada data valid.", "error");
         }
     }
 
-    // --- 3. HELPER FUNCTIONS ---
+    // --- 4. UTILITIES ---
     function generateUUID() { 
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -443,17 +524,49 @@ jones1510	125	73	114	2	1:57	156.16%	$5.40`;
         });
     }
 
-    function formatPayout(str) {
+    function parseMoney(str) {
         let clean = str.replace(/[^0-9.,-]/g, '');
         if (clean.includes('.') && clean.includes(',')) {
-            clean = clean.replace(/\./g, '').replace(',', '.');
+             clean = clean.replace(/\./g, '').replace(',', '.');
         } else if (clean.includes(',')) {
-            clean = clean.replace(',', '.'); 
+             clean = clean.replace(',', '.'); 
         }
-        let val = parseFloat(clean);
-        if (isNaN(val)) val = 0;
+        return parseFloat(clean) || 0;
+    }
+
+    function formatPayout(str) {
+        let val = parseMoney(str);
         let formattedNum = val.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         return formattedNum + " $";
+    }
+
+    function formatDateTime(rawDate, type) {
+        try {
+            let d, m, y, h, min, partsDate, timePart, datePart;
+
+            if (type === 'iso') { // YYYY-MM-DD
+                partsDate = rawDate.split(' ');
+                datePart = partsDate[0];
+                timePart = partsDate[1] || "00:00:00";
+                [y, m, d] = datePart.split('-');
+                [h, min] = timePart.split(':');
+            } else { // US: M/D/YYYY
+                partsDate = rawDate.split(' ');
+                datePart = partsDate[0];
+                timePart = partsDate[1] || "00:00";
+                [m, d, y] = datePart.split('/');
+                [h, min] = timePart.split(':');
+            }
+
+            const dd = d.length < 2 ? '0' + d : d;
+            const mm = m.length < 2 ? '0' + m : m;
+            const hh = h.length < 2 ? '0' + h : h;
+            const mi = min ? (min.length < 2 ? '0' + min : min) : '00';
+
+            return `${dd}.${mm}.${y} ${hh}:${mi}`;
+        } catch (e) {
+            return rawDate; 
+        }
     }
 
     function createRow(data) {
@@ -489,26 +602,27 @@ jones1510	125	73	114	2	1:57	156.16%	$5.40`;
             rows.push(rowData.join("\t"));
         });
 
-        const csvContent = rows.join("\n");
+        const tsvContent = rows.join("\n");
 
-        navigator.clipboard.writeText(csvContent).then(() => {
-            const originalText = document.querySelector('.btn-copy').innerHTML;
+        navigator.clipboard.writeText(tsvContent).then(() => {
             const btn = document.querySelector('.btn-copy');
-            btn.innerHTML = "✅ Copied!";
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "✅ Berhasil Disalin!";
             setTimeout(() => { btn.innerHTML = originalText; }, 2000);
-            showStatus("Semua data berhasil disalin!", "success");
+            showStatus("Data berhasil disalin ke Clipboard.", "success");
         }).catch(err => {
-            console.error('Gagal menyalin: ', err);
             showStatus("Gagal menyalin data.", "error");
         });
     }
 
     function showStatus(msg, type) {
         const el = document.getElementById('statusMsg');
-        el.textContent = msg;
+        el.innerHTML = msg;
         el.className = 'status-box status-' + type;
         el.style.display = 'block';
-        setTimeout(() => { el.style.display = 'none'; }, 5000);
+        if (type !== 'error') {
+            setTimeout(() => { el.style.display = 'none'; }, 6000);
+        }
     }
 
     function clearData() {
